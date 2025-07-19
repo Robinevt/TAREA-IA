@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simulador: Clasificación de los Seres Vivos</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f0f8ff;
+    }
+    header {
+      background-color: #00796b;
+      color: white;
+      text-align: center;
+      padding: 1rem;
+    }
+    .controls, .info-panel {
+      padding: 1rem;
+    }
+    .environment {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      padding: 1rem;
+      flex-wrap: wrap;
+    }
+    .organism {
+      width: 120px;
+      padding: 0.5rem;
+      border: 1px solid #ccc;
+      background-color: white;
+      text-align: center;
+      border-radius: 10px;
+      cursor: grab;
+    }
+    .drop-zone {
+      border: 2px dashed #666;
+      min-height: 150px;
+      padding: 1rem;
+      background-color: #fafafa;
+    }
+    .button {
+      margin: 0.5rem;
+      padding: 0.7rem 1.2rem;
+      background-color: #009688;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    .info-box {
+      background-color: #e0f2f1;
+      border: 1px solid #004d40;
+      padding: 1rem;
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Simulador de Clasificación de los Seres Vivos</h1>
+    <p>Explora, clasifica y aprende sobre los seres vivos de tu entorno</p>
+  </header>
+
+  <div class="controls">
+    <button class="button" onclick="changeEnvironment('bosque')">Bosque</button>
+    <button class="button" onclick="changeEnvironment('desierto')">Desierto</button>
+    <button class="button" onclick="changeEnvironment('acuático')">Acuático</button>
+    <button class="button" onclick="changeEnvironment('urbano')">Urbano</button>
+    <button class="button" onclick="toggleLabels()">Mostrar/Ocultar Etiquetas</button>
+  </div>
+
+  <div class="environment" id="environment">
+    <!-- Organismos se insertarán dinámicamente -->
+  </div>
+
+  <div class="controls">
+    <h3>Clasifica los organismos:</h3>
+    <div class="environment">
+      <div class="drop-zone" ondrop="drop(event)" ondragover="allowDrop(event)" id="animales">Animales</div>
+      <div class="drop-zone" ondrop="drop(event)" ondragover="allowDrop(event)" id="plantas">Plantas</div>
+      <div class="drop-zone" ondrop="drop(event)" ondragover="allowDrop(event)" id="hongos">Hongos</div>
+      <div class="drop-zone" ondrop="drop(event)" ondragover="allowDrop(event)" id="protozoarios">Protozoarios</div>
+      <div class="drop-zone" ondrop="drop(event)" ondragover="allowDrop(event)" id="bacterias">Bacterias</div>
+    </div>
+  </div>
+
+  <div class="info-panel">
+    <button class="button" onclick="showFeedback()">Ver retroalimentación</button>
+    <div class="info-box" id="feedback"></div>
+  </div>
+
+  <script>
+    const organisms = [
+      { id: 1, nombre: "Gallina", reino: "animales" },
+      { id: 2, nombre: "Maíz", reino: "plantas" },
+      { id: 3, nombre: "Champiñón", reino: "hongos" },
+      { id: 4, nombre: "Amoeba", reino: "protozoarios" },
+      { id: 5, nombre: "Lactobacillus", reino: "bacterias" },
+      { id: 6, nombre: "Perro", reino: "animales" },
+      { id: 7, nombre: "Cactus", reino: "plantas" },
+    ];
+
+    let showLabels = true;
+
+    function loadOrganisms() {
+      const container = document.getElementById("environment");
+      container.innerHTML = "";
+      organisms.forEach(org => {
+        const div = document.createElement("div");
+        div.className = "organism";
+        div.id = "org-" + org.id;
+        div.draggable = true;
+        div.ondragstart = drag;
+        div.innerHTML = showLabels ? `${org.nombre}` : "?";
+        container.appendChild(div);
+      });
+    }
+
+    function toggleLabels() {
+      showLabels = !showLabels;
+      loadOrganisms();
+    }
+
+    function changeEnvironment(env) {
+      alert("Ambiente cambiado a: " + env);
+      // Lógica para cambiar ambiente visual (si se implementa luego)
+    }
+
+    function allowDrop(ev) {
+      ev.preventDefault();
+    }
+
+    function drag(ev) {
+      ev.dataTransfer.setData("text", ev.target.id);
+    }
+
+    function drop(ev) {
+      ev.preventDefault();
+      const data = ev.dataTransfer.getData("text");
+      const item = document.getElementById(data);
+      ev.target.appendChild(item);
+    }
+
+    function showFeedback() {
+      const feedback = document.getElementById("feedback");
+      let score = 0;
+      organisms.forEach(org => {
+        const el = document.getElementById("org-" + org.id);
+        const parent = el.parentElement.id;
+        if (parent === org.reino) score++;
+      });
+      feedback.innerHTML = `Clasificaste correctamente ${score} de ${organisms.length} organismos.`;
+    }
+
+    window.onload = loadOrganisms;
+  </script>
+</body>
+</html>
